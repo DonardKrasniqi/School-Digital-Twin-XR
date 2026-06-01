@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>School WebXR Virtual Tour</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.5.1/dist/aframe-extras.min.js"></script>
+</head>
+
+<body>
+
+  <div id="top-bar">
+    <h2>School WebXR Virtual Tour</h2>
+  </div>
+
+  <div id="info-panel">
+    <h3>Controls</h3>
+    <p><b>WASD</b> = Move</p>
+    <p><b>Mouse</b> = Look around</p>
+    <p><b>Blue circles</b> = Teleport</p>
+    <p><b>VR Button</b> = Enter VR mode</p>
+
+    <button id="overview-mode">Overview View</button>
+    <button id="walk-mode">Walk Inside</button>
+    <button id="close-info">Hide Panel</button>
+  </div>
+
+  <div id="loading-screen">
+    <h1>Loading School Virtual Tour...</h1>
+    <div id="loading-bar-container">
+      <div id="loading-bar"></div>
+    </div>
+    <p id="loading-text">Loading scanned school model...</p>
+  </div>
+
+  <a-scene
+    id="scene"
+    renderer="antialias: true; colorManagement: true;"
+    background="color: #cfe8ff"
+    vr-mode-ui="enabled: true"
+  >
+
+    <a-assets timeout="60000">
+      <a-asset-item id="schoolModel" src="assets/school.glb"></a-asset-item>
+    </a-assets>
+
+    <a-entity light="type: ambient; intensity: 1.1"></a-entity>
+    <a-entity light="type: directional; intensity: 0.8" position="3 8 5"></a-entity>
+
+    <!-- Real scanned school/classroom model -->
+    <a-entity
+      id="school-scan"
+      gltf-model="#schoolModel"
+      position="0 0 0"
+      rotation="0 0 0"
+      scale="1 1 1"
+      visible="false"
+    ></a-entity>
+
+    <!-- Helper floor, useful for orientation -->
+    <a-plane
+      id="helper-floor"
+      position="0 -0.02 0"
+      rotation="-90 0 0"
+      width="80"
+      height="80"
+      color="#7BC8A4"
+      opacity="0.20"
+    ></a-plane>
+
+    <!-- Player Camera Rig -->
+    <a-entity
+      id="player"
+      position="0 8 8"
+      movement-controls="speed: 0.18"
+      simple-collision
+    >
+      <a-camera
+     id="camera"
+  position="0 0 0"
+  wasd-controls="acceleration: 30"
+  look-controls="pointerLockEnabled: false"
+>
+        <a-cursor color="#ffffff"></a-cursor>
+      </a-camera>
+    </a-entity>
+
+    <!-- Teleport Points -->
+    <a-cylinder class="teleport-point" position="0 0.05 4" radius="0.45" height="0.04" color="#0066ff" opacity="0.85"></a-cylinder>
+    <a-cylinder class="teleport-point" position="0 0.05 0" radius="0.45" height="0.04" color="#0066ff" opacity="0.85"></a-cylinder>
+    <a-cylinder class="teleport-point" position="3 0.05 0" radius="0.45" height="0.04" color="#0066ff" opacity="0.85"></a-cylinder>
+    <a-cylinder class="teleport-point" position="-3 0.05 0" radius="0.45" height="0.04" color="#0066ff" opacity="0.85"></a-cylinder>
+    <a-cylinder class="teleport-point" position="0 0.05 -4" radius="0.45" height="0.04" color="#0066ff" opacity="0.85"></a-cylinder>
+
+  </a-scene>
+
+  <script src="script.js"></script>
+</body>
+</html>

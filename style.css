@@ -1,0 +1,137 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+/* Top Bar */
+#top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: rgba(15, 82, 102, 0.95);
+  color: white;
+  z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#top-bar h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+/* Information Panel */
+#info-panel {
+  position: fixed;
+  top: 70px;
+  left: 20px;
+  width: 240px;
+  background: rgba(17, 24, 39, 0.92);
+  color: white;
+  z-index: 20;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+#info-panel h3 {
+  margin-top: 0;
+}
+
+#info-panel p {
+  margin: 8px 0;
+}
+
+#overview-mode,
+#walk-mode,
+#close-info {
+  margin-top: 8px;
+  width: 100%;
+  padding: 9px;
+  background: #38bdf8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#overview-mode:hover,
+#walk-mode:hover,
+#close-info:hover {
+  background: #0ea5e9;
+}
+
+#walk-mode {
+  background: #22c55e;
+}
+
+#walk-mode:hover {
+  background: #16a34a;
+}
+
+/* Loading Screen */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #111827;
+  color: white;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#loading-screen h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+#loading-bar-container {
+  width: 60%;
+  max-width: 500px;
+  height: 18px;
+  background: #374151;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+#loading-bar {
+  width: 0%;
+  height: 100%;
+  background: #38bdf8;
+  transition: width 0.3s ease;
+}
+
+#loading-text {
+  margin-top: 15px;
+  font-size: 16px;
+  color: #d1d5db;
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+  #info-panel {
+    width: 200px;
+    font-size: 12px;
+    top: 60px;
+    left: 10px;
+  }
+
+  #top-bar h2 {
+    font-size: 15px;
+  }
+
+  #loading-screen h1 {
+    font-size: 20px;
+  }
+}

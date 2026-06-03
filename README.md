@@ -39,22 +39,55 @@ npx --yes serve -l 3000
 
 | Input | Action |
 |--------|--------|
-| WASD | Move |
-| Mouse | Look (click canvas to lock pointer) |
-| `1` | Overview camera |
-| `2` | Walk inside |
-| `M` | Toggle minimap / compass |
-| Blue pads | Teleport |
-| Gold spheres | Room info |
-| VR button | Enter VR |
+| WASD | Move (inside room walls) |
+| Mouse | Look around |
+| `M` | Toggle minimap |
+| `B` | Ring bell |
+| Blue pads | Jump to spot in room |
+| Panel buttons | Bell, hallway ambience |
+| VR button | Enter VR (after Enter classroom) |
 
-## Team roles (from project plan)
+## Deploy on Vercel
 
-1. **Reality capture** — Polycam scan, Blender cleanup, GLB export  
-2. **WebXR** — A-Frame scene, loading, collision, teleport  
-3. **Experience** — Spatial audio, HUD, proximity zones, info markers  
-4. **DevOps** — Repo layout, CI deploy, performance QA  
+This is a **static site** (no build step). `index.html` is at the repo root.
 
-## Deploy
+### Option A — Import from GitHub (recommended)
 
-Pushes to `main` deploy the repo root as a static site via GitHub Actions (configure Netlify or Vercel secrets if needed).
+1. Push this repo to GitHub (see below if push fails).
+2. Go to [vercel.com/new](https://vercel.com/new) and sign in with GitHub.
+3. **Import** `DonardKrasniqi/School-Digital-Twin-XR`.
+4. Leave defaults:
+   - **Framework Preset:** Other
+   - **Root Directory:** `./`
+   - **Build Command:** (empty)
+   - **Output Directory:** `./`
+5. Click **Deploy**. Vercel gives you a URL like `https://school-digital-twin-xr.vercel.app`.
+
+### Option B — Vercel CLI
+
+```bash
+npm i -g vercel
+vercel login
+vercel
+```
+
+Follow prompts; use the project root. For production:
+
+```bash
+vercel --prod
+```
+
+`vercel.json` in this repo sets the output directory and caches the GLB model.
+
+## Push to GitHub
+
+```bash
+git push origin main
+```
+
+If you see `Permission denied`, sign in as **DonardKrasniqi** (repo owner):
+
+```bash
+gh auth login
+# or update Windows Credential Manager for github.com
+```

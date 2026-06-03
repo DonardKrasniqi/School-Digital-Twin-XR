@@ -1,0 +1,10 @@
+{
+  "name": "school-digital-twin-xr",
+  "version": "1.0.0",
+  "description": "WebXR virtual school campus — digital twin tour",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve -l 3000 --no-clipboard",
+    "preview": "npm start"
+  }
+}

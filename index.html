@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="School Digital Twin — classroom WebXR tour" />
+  <title>School Digital Twin | Classroom Tour</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏫</text></svg>" />
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+</head>
+<body>
+  <header id="top-bar">
+    <h1>School Digital Twin</h1>
+    <p class="tagline">Classroom walk-through</p>
+  </header>
+
+  <aside id="info-panel" aria-label="Tour controls">
+    <h2>Controls</h2>
+    <ul>
+      <li><strong>WASD</strong> — Move (stay inside walls)</li>
+      <li><strong>Mouse</strong> — Look around</li>
+      <li><strong>Blue pads</strong> — Move to spot</li>
+      <li><strong>VR button</strong> — Enter VR</li>
+    </ul>
+    <p class="shortcut-hint">Key <kbd>M</kbd> toggles minimap</p>
+
+    <p class="panel-section-label">Sounds</p>
+    <button type="button" id="bell-btn" class="btn btn-bell">Ring school bell</button>
+    <button type="button" id="ambience-btn" class="btn btn-muted">Hallway sound: On</button>
+
+    <button type="button" id="close-info" class="btn btn-ghost">Hide panel</button>
+  </aside>
+
+  <div id="hud" aria-hidden="true">
+    <div id="compass" title="Facing direction">
+      <span id="compass-needle">N</span>
+    </div>
+    <canvas id="minimap" width="140" height="140" title="Room minimap — blue outline is the wall boundary"></canvas>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+
+  <div id="loading-screen">
+    <h2>Loading classroom…</h2>
+    <div id="loading-bar-container">
+      <div id="loading-bar"></div>
+    </div>
+    <p id="loading-text">Preparing 3D model…</p>
+    <button type="button" id="start-tour" class="btn btn-primary" hidden disabled>Enter classroom</button>
+    <p id="loading-hint" class="loading-hint">Run <code>npm start</code> and open the URL shown in the terminal (not the HTML file directly).</p>
+  </div>
+
+  <a-scene
+    id="scene"
+    renderer="antialias: true; colorManagement: true"
+    background="color: #cfe8ff"
+    vr-mode-ui="enabled: false"
+    loading-screen="enabled: false"
+  >
+    <a-assets timeout="120000">
+      <audio id="hallway-audio" src="assets/audio/hallway-ambient.mp3" preload="auto" loop crossorigin="anonymous"></audio>
+      <audio id="bell-audio" src="assets/audio/school-bell.mp3" preload="auto" crossorigin="anonymous"></audio>
+    </a-assets>
+
+    <a-entity light="type: ambient; intensity: 1.15"></a-entity>
+    <a-entity light="type: directional; intensity: 0.85" position="4 10 6"></a-entity>
+
+    <a-entity id="school-scan" gltf-model="assets/models/school.glb" position="0 0 0"></a-entity>
+
+    <a-plane
+      id="helper-floor"
+      position="0 -0.02 0"
+      rotation="-90 0 0"
+      width="4"
+      height="4"
+      color="#7BC8A4"
+      opacity="0.12"
+      material="shader: flat"
+    ></a-plane>
+
+    <a-entity id="room-walls"></a-entity>
+
+    <a-entity id="teleport-pads"></a-entity>
+
+    <a-entity
+      id="player"
+      position="0 1.6 0"
+      room-bounds="padding: 0.45"
+    >
+      <a-entity
+        id="camera-rig"
+        camera
+        look-controls="pointerLockEnabled: true; touchEnabled: true"
+        wasd-controls="acceleration: 17; fly: false"
+        position="0 0 0"
+      >
+        <a-cursor
+          id="cursor"
+          raycaster="objects: .teleport-point; far: 20"
+          fuse="false"
+          color="#ffffff"
+        ></a-cursor>
+      </a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script src="src/main.js"></script>
+</body>
+</html>

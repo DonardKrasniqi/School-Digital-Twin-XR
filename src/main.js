@@ -35,7 +35,7 @@ const MAP_CENTER = 70;
 const MODEL_URL = "assets/models/school.glb";
 
 function isMobileDevice() {
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 }
 
 /* ——— Room wall collision (keeps player inside scan bounds) ——— */
@@ -54,15 +54,143 @@ AFRAME.registerComponent("room-bounds", {
   tick: function () {
     if (!roomLimits) return;
 
-    const pos = this.el.object3D.position;
+    const pos = this.el.getAttribute("position");
     const { minX, maxX, minZ, maxZ, minY, maxY } = roomLimits;
+    let { x, y, z } = pos;
+    let changed = false;
 
-    if (pos.x < minX) pos.x = minX;
-    if (pos.x > maxX) pos.x = maxX;
-    if (pos.z < minZ) pos.z = minZ;
-    if (pos.z > maxZ) pos.z = maxZ;
-    if (pos.y < minY) pos.y = minY;
-    if (pos.y > maxY) pos.y = maxY;
+    if (x < minX) {
+      x = minX;
+      changed = true;
+    }
+    if (x > maxX) {
+      x = maxX;
+      changed = true;
+    }
+    if (z < minZ) {
+      z = minZ;
+      changed = true;
+    }
+    if (z > maxZ) {
+      z = maxZ;
+      changed = true;
+    }
+    if (y < minY) {
+      y = minY;
+      changed = true;
+    }
+    if (y > maxY) {
+      y = maxY;
+      changed = true;
+    }
+
+    if (changed) {
+      this.el.setAttribute("position", { x, y, z });
+    }
+  }
+});
+
+/* ——— Movement (keyboard + mobile pad) ——— */
+
+const keysDown = new Set();
+const mobileMove = { forward: 0, right: 0 };
+let movementListenersReady = false;
+
+function getMoveInput() {
+  let forward = 0;
+  let right = 0;
+
+  if (isMobileDevice()) {
+    forward = mobileMove.forward;
+    right = mobileMove.right;
+  } else {
+    if (keysDown.has("w") || keysDown.has("arrowup")) forward += 1;
+    if (keysDown.has("s") || keysDown.has("arrowdown")) forward -= 1;
+    if (keysDown.has("d") || keysDown.has("arrowright")) right += 1;
+    if (keysDown.has("a") || keysDown.has("arrowleft")) right -= 1;
+  }
+
+  return { forward, right };
+}
+
+function setupMovementListeners() {
+  if (movementListenersReady) return;
+  movementListenersReady = true;
+
+  window.addEventListener("keydown", (event) => {
+    if (!document.body.classList.contains("tour-started")) return;
+    const key = event.key.toLowerCase();
+    if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
+      event.preventDefault();
+      keysDown.add(key);
+    }
+  });
+
+  window.addEventListener("keyup", (event) => {
+    keysDown.delete(event.key.toLowerCase());
+  });
+
+  window.addEventListener("blur", () => keysDown.clear());
+
+  const mobileControls = document.getElementById("mobile-controls");
+  if (!mobileControls) return;
+
+  mobileControls.querySelectorAll(".move-btn").forEach((btn) => {
+    const dir = btn.dataset.move;
+
+    const press = (e) => {
+      e.preventDefault();
+      if (dir === "forward") mobileMove.forward = 1;
+      if (dir === "back") mobileMove.forward = -1;
+      if (dir === "left") mobileMove.right = -1;
+      if (dir === "right") mobileMove.right = 1;
+      btn.classList.add("is-active");
+    };
+
+    const release = () => {
+      if (dir === "forward" || dir === "back") mobileMove.forward = 0;
+      if (dir === "left" || dir === "right") mobileMove.right = 0;
+      btn.classList.remove("is-active");
+    };
+
+    btn.addEventListener("pointerdown", press);
+    btn.addEventListener("pointerup", release);
+    btn.addEventListener("pointercancel", release);
+    btn.addEventListener("pointerleave", release);
+  });
+}
+
+AFRAME.registerComponent("tour-movement", {
+  schema: {
+    speed: { type: "number", default: 2.4 }
+  },
+
+  init: function () {
+    setupMovementListeners();
+  },
+
+  tick: function (time, timeDelta) {
+    if (!document.body.classList.contains("tour-started")) return;
+    if (!timeDelta) return;
+
+    const camera = document.getElementById("camera-rig");
+    if (!camera) return;
+
+    const { forward, right } = getMoveInput();
+    if (!forward && !right) return;
+
+    const dt = Math.min(timeDelta / 1000, 0.05);
+    const yaw = camera.object3D.rotation.y;
+    const step = this.data.speed * dt;
+    const dx = (Math.sin(yaw) * forward + Math.cos(yaw) * right) * step;
+    const dz = (Math.cos(yaw) * forward - Math.sin(yaw) * right) * step;
+
+    const pos = this.el.getAttribute("position");
+    this.el.setAttribute("position", {
+      x: pos.x + dx,
+      y: pos.y,
+      z: pos.z + dz
+    });
   }
 });
 
@@ -458,108 +586,6 @@ function initLoading() {
 }
 
 initLoading();
-
-const mobileControls = document.getElementById("mobile-controls");
-const mobileMove = { forward: 0, right: 0 };
-const keysDown = new Set();
-const MOVE_SPEED = 2.4;
-let lastMoveTime = 0;
-
-function isTourActive() {
-  return modelReady && document.body.classList.contains("tour-started");
-}
-
-function getMoveInput() {
-  let forward = 0;
-  let right = 0;
-
-  if (isMobileDevice()) {
-    forward = mobileMove.forward;
-    right = mobileMove.right;
-  } else {
-    if (keysDown.has("w") || keysDown.has("arrowup")) forward += 1;
-    if (keysDown.has("s") || keysDown.has("arrowdown")) forward -= 1;
-    if (keysDown.has("d") || keysDown.has("arrowright")) right += 1;
-    if (keysDown.has("a") || keysDown.has("arrowleft")) right -= 1;
-  }
-
-  return { forward, right };
-}
-
-function applyMovement(dt) {
-  if (!isTourActive() || !player || !cameraRig) return;
-
-  const { forward, right } = getMoveInput();
-  if (!forward && !right) return;
-
-  const yaw = cameraRig.object3D.rotation.y;
-  const step = MOVE_SPEED * dt;
-  const dx = (Math.sin(yaw) * forward + Math.cos(yaw) * right) * step;
-  const dz = (Math.cos(yaw) * forward - Math.sin(yaw) * right) * step;
-
-  player.object3D.position.x += dx;
-  player.object3D.position.z += dz;
-}
-
-function hookMovementTick() {
-  scene.addEventListener("tick", () => {
-    const now = performance.now();
-    const dt = lastMoveTime ? Math.min((now - lastMoveTime) / 1000, 0.05) : 0;
-    lastMoveTime = now;
-    applyMovement(dt);
-  });
-}
-
-function initMovementControls() {
-  window.addEventListener("keydown", (event) => {
-    if (!isTourActive()) return;
-    const key = event.key.toLowerCase();
-    if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
-      event.preventDefault();
-    }
-    keysDown.add(key);
-  });
-
-  window.addEventListener("keyup", (event) => {
-    keysDown.delete(event.key.toLowerCase());
-  });
-
-  window.addEventListener("blur", () => keysDown.clear());
-
-  if (mobileControls) {
-    mobileControls.querySelectorAll(".move-btn").forEach((btn) => {
-      const dir = btn.dataset.move;
-
-      const press = (e) => {
-        e.preventDefault();
-        if (dir === "forward") mobileMove.forward = 1;
-        if (dir === "back") mobileMove.forward = -1;
-        if (dir === "left") mobileMove.right = -1;
-        if (dir === "right") mobileMove.right = 1;
-        btn.classList.add("is-active");
-      };
-
-      const release = () => {
-        if (dir === "forward" || dir === "back") mobileMove.forward = 0;
-        if (dir === "left" || dir === "right") mobileMove.right = 0;
-        btn.classList.remove("is-active");
-      };
-
-      btn.addEventListener("pointerdown", press);
-      btn.addEventListener("pointerup", release);
-      btn.addEventListener("pointercancel", release);
-      btn.addEventListener("pointerleave", release);
-    });
-  }
-
-  if (scene.hasLoaded) {
-    hookMovementTick();
-  } else {
-    scene.addEventListener("loaded", hookMovementTick);
-  }
-}
-
-initMovementControls();
 
 startTourBtn.addEventListener("click", () => {
   if (!modelReady) return;

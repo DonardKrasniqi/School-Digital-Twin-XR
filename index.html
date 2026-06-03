@@ -21,7 +21,8 @@
     <h2>Controls</h2>
     <ul>
       <li><strong>WASD</strong> — Move (desktop)</li>
-      <li><strong>Drag</strong> — Look (desktop)</li>
+      <li><strong>Mouse</strong> — Look (desktop, click view to capture)</li>
+      <li><strong>Esc</strong> — Release mouse (desktop)</li>
       <li class="mobile-only-hint"><strong>Tilt phone</strong> — Look around</li>
       <li><strong>Blue pads</strong> — Jump to spot (corners)</li>
       <li class="mobile-only-hint"><strong>Pad buttons</strong> — Move on phone</li>
@@ -101,7 +102,7 @@
       <a-entity
         id="camera-rig"
         camera
-        look-controls="pointerLockEnabled: false; touchEnabled: true; magicWindowTrackingEnabled: false; reverseMouseDrag: false"
+        look-controls="pointerLockEnabled: true; touchEnabled: false; magicWindowTrackingEnabled: false; reverseMouseDrag: false"
         position="0 0 0"
       >
         <a-cursor

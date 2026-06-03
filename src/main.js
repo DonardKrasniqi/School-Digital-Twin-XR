@@ -18,13 +18,11 @@ const compassNeedle = document.getElementById("compass-needle");
 const ambienceBtn = document.getElementById("ambience-btn");
 let moveForward = null;
 let moveRight = null;
-let worldUp = null;
 
 function ensureMovementVectors() {
   if (moveForward || typeof THREE === "undefined") return;
   moveForward = new THREE.Vector3();
   moveRight = new THREE.Vector3();
-  worldUp = new THREE.Vector3(0, 1, 0);
 }
 
 let ambienceOn = true;
@@ -190,11 +188,9 @@ AFRAME.registerComponent("tour-movement", {
     ensureMovementVectors();
     if (!moveForward) return;
 
-    camera.object3D.getWorldDirection(moveForward);
-    moveForward.y = 0;
-    if (moveForward.lengthSq() < 0.0001) return;
-    moveForward.normalize();
-    moveRight.crossVectors(moveForward, worldUp).normalize();
+    const yaw = camera.object3D.rotation.y;
+    moveForward.set(Math.sin(yaw), 0, -Math.cos(yaw));
+    moveRight.set(Math.cos(yaw), 0, -Math.sin(yaw));
 
     const dx = (moveForward.x * forward + moveRight.x * right) * step;
     const dz = (moveForward.z * forward + moveRight.z * right) * step;
@@ -550,6 +546,8 @@ async function beginModelLoad() {
   }
 }
 
+let desktopPointerLockReady = false;
+
 function applyLookControls() {
   if (!cameraRig) return;
 
@@ -566,20 +564,51 @@ function applyLookControls() {
   }
 
   cameraRig.setAttribute("look-controls", {
-    pointerLockEnabled: false,
-    touchEnabled: true,
+    pointerLockEnabled: true,
+    touchEnabled: false,
     magicWindowTrackingEnabled: false,
     reverseMouseDrag: false
+  });
+  const cursor = document.getElementById("cursor");
+  if (cursor) cursor.setAttribute("visible", "false");
+}
+
+function requestScenePointerLock() {
+  if (isMobileDevice() || !scene?.canvas) return;
+  if (document.pointerLockElement === scene.canvas) return;
+  scene.canvas.requestPointerLock();
+}
+
+function setupDesktopPointerLock() {
+  if (desktopPointerLockReady || isMobileDevice()) return;
+  desktopPointerLockReady = true;
+
+  const canvas = scene.canvas;
+  if (!canvas) return;
+
+  document.addEventListener("pointerlockchange", () => {
+    const locked = document.pointerLockElement === canvas;
+    document.body.classList.toggle("pointer-locked", locked);
+    if (!locked && document.body.classList.contains("tour-started")) {
+      showToast("Mouse released. Click the view to look again. WASD to move.");
+    }
+  });
+
+  scene.addEventListener("click", (event) => {
+    if (!document.body.classList.contains("tour-started")) return;
+    if (event.target.closest("a, button, .btn")) return;
+    requestScenePointerLock();
   });
 }
 
 function startLookControls(gyroGranted) {
   applyLookControls();
+  setupDesktopPointerLock();
   const lookControls = cameraRig?.components?.["look-controls"];
   if (lookControls) lookControls.play();
 
   if (!isMobileDevice()) {
-    showToast("Click and drag the view to look around. Use WASD to move.");
+    showToast("Click the view to capture the mouse. Esc releases it. WASD to move.");
     return;
   }
 

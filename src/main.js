@@ -54,18 +54,6 @@ AFRAME.registerComponent("room-bounds", {
   tick: function () {
     if (!roomLimits) return;
 
-    const rig = document.getElementById("camera-rig");
-    if (rig) {
-      const rigPos = rig.object3D.position;
-      if (rigPos.lengthSq() > 0.0001) {
-        const worldPos = new THREE.Vector3();
-        rig.object3D.getWorldPosition(worldPos);
-        this.el.object3D.position.copy(worldPos);
-        rig.object3D.position.set(0, 0, 0);
-        rig.setAttribute("position", "0 0 0");
-      }
-    }
-
     const pos = this.el.object3D.position;
     const { minX, maxX, minZ, maxZ, minY, maxY } = roomLimits;
 
@@ -435,7 +423,6 @@ function applyMobileSceneTuning() {
   if (scene.renderer) {
     scene.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
   }
-  if (cameraRig) cameraRig.removeAttribute("wasd-controls");
 }
 
 function initLoading() {
@@ -474,61 +461,105 @@ initLoading();
 
 const mobileControls = document.getElementById("mobile-controls");
 const mobileMove = { forward: 0, right: 0 };
-const MOBILE_MOVE_SPEED = 2.2;
+const keysDown = new Set();
+const MOVE_SPEED = 2.4;
+let lastMoveTime = 0;
 
-function updateMobileMovement(dt) {
-  if (!modelReady || !mobileMove.forward && !mobileMove.right) return;
-  if (!cameraRig || !player) return;
+function isTourActive() {
+  return modelReady && document.body.classList.contains("tour-started");
+}
+
+function getMoveInput() {
+  let forward = 0;
+  let right = 0;
+
+  if (isMobileDevice()) {
+    forward = mobileMove.forward;
+    right = mobileMove.right;
+  } else {
+    if (keysDown.has("w") || keysDown.has("arrowup")) forward += 1;
+    if (keysDown.has("s") || keysDown.has("arrowdown")) forward -= 1;
+    if (keysDown.has("d") || keysDown.has("arrowright")) right += 1;
+    if (keysDown.has("a") || keysDown.has("arrowleft")) right -= 1;
+  }
+
+  return { forward, right };
+}
+
+function applyMovement(dt) {
+  if (!isTourActive() || !player || !cameraRig) return;
+
+  const { forward, right } = getMoveInput();
+  if (!forward && !right) return;
 
   const yaw = cameraRig.object3D.rotation.y;
-  const dist = MOBILE_MOVE_SPEED * dt;
-  const dx = (Math.sin(yaw) * mobileMove.forward + Math.cos(yaw) * mobileMove.right) * dist;
-  const dz = (Math.cos(yaw) * mobileMove.forward - Math.sin(yaw) * mobileMove.right) * dist;
+  const step = MOVE_SPEED * dt;
+  const dx = (Math.sin(yaw) * forward + Math.cos(yaw) * right) * step;
+  const dz = (Math.cos(yaw) * forward - Math.sin(yaw) * right) * step;
 
   player.object3D.position.x += dx;
   player.object3D.position.z += dz;
 }
 
-function initMobileControls() {
-  if (!mobileControls) return;
-
-  mobileControls.querySelectorAll(".move-btn").forEach((btn) => {
-    const dir = btn.dataset.move;
-
-    const press = () => {
-      if (dir === "forward") mobileMove.forward = 1;
-      if (dir === "back") mobileMove.forward = -1;
-      if (dir === "left") mobileMove.right = -1;
-      if (dir === "right") mobileMove.right = 1;
-      btn.classList.add("is-active");
-    };
-
-    const release = () => {
-      if (dir === "forward" || dir === "back") mobileMove.forward = 0;
-      if (dir === "left" || dir === "right") mobileMove.right = 0;
-      btn.classList.remove("is-active");
-    };
-
-    btn.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
-      press();
-    });
-    btn.addEventListener("pointerup", release);
-    btn.addEventListener("pointerleave", release);
-    btn.addEventListener("pointercancel", release);
-  });
-
-  let lastFrame = 0;
+function hookMovementTick() {
   scene.addEventListener("tick", () => {
-    if (!document.body.classList.contains("tour-started") || !isMobileDevice()) return;
     const now = performance.now();
-    const dt = lastFrame ? Math.min((now - lastFrame) / 1000, 0.05) : 0;
-    lastFrame = now;
-    updateMobileMovement(dt);
+    const dt = lastMoveTime ? Math.min((now - lastMoveTime) / 1000, 0.05) : 0;
+    lastMoveTime = now;
+    applyMovement(dt);
   });
 }
 
-initMobileControls();
+function initMovementControls() {
+  window.addEventListener("keydown", (event) => {
+    if (!isTourActive()) return;
+    const key = event.key.toLowerCase();
+    if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(key)) {
+      event.preventDefault();
+    }
+    keysDown.add(key);
+  });
+
+  window.addEventListener("keyup", (event) => {
+    keysDown.delete(event.key.toLowerCase());
+  });
+
+  window.addEventListener("blur", () => keysDown.clear());
+
+  if (mobileControls) {
+    mobileControls.querySelectorAll(".move-btn").forEach((btn) => {
+      const dir = btn.dataset.move;
+
+      const press = (e) => {
+        e.preventDefault();
+        if (dir === "forward") mobileMove.forward = 1;
+        if (dir === "back") mobileMove.forward = -1;
+        if (dir === "left") mobileMove.right = -1;
+        if (dir === "right") mobileMove.right = 1;
+        btn.classList.add("is-active");
+      };
+
+      const release = () => {
+        if (dir === "forward" || dir === "back") mobileMove.forward = 0;
+        if (dir === "left" || dir === "right") mobileMove.right = 0;
+        btn.classList.remove("is-active");
+      };
+
+      btn.addEventListener("pointerdown", press);
+      btn.addEventListener("pointerup", release);
+      btn.addEventListener("pointercancel", release);
+      btn.addEventListener("pointerleave", release);
+    });
+  }
+
+  if (scene.hasLoaded) {
+    hookMovementTick();
+  } else {
+    scene.addEventListener("loaded", hookMovementTick);
+  }
+}
+
+initMovementControls();
 
 startTourBtn.addEventListener("click", () => {
   if (!modelReady) return;

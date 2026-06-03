@@ -21,13 +21,12 @@
     <h2>Controls</h2>
     <ul>
       <li><strong>WASD</strong> — Move (desktop)</li>
-      <li><strong>Drag / touch</strong> — Look around</li>
+      <li><strong>Drag</strong> — Look (desktop)</li>
+      <li class="mobile-only-hint"><strong>Tilt phone</strong> — Look around</li>
       <li><strong>Blue pads</strong> — Jump to spot (corners)</li>
       <li class="mobile-only-hint"><strong>Pad buttons</strong> — Move on phone</li>
       <li><strong>VR button</strong> — Enter VR</li>
     </ul>
-    <p class="shortcut-hint">Key <kbd>M</kbd> toggles minimap</p>
-
     <p class="panel-section-label">Sounds</p>
     <button type="button" id="bell-btn" class="btn btn-bell">Ring school bell</button>
     <button type="button" id="ambience-btn" class="btn btn-muted">Hallway sound: On</button>
@@ -39,7 +38,6 @@
     <div id="compass" title="Facing direction">
       <span id="compass-needle">N</span>
     </div>
-    <canvas id="minimap" width="140" height="140" title="Room minimap — blue outline is the wall boundary"></canvas>
   </div>
 
   <div id="toast" role="status" aria-live="polite" hidden></div>
@@ -103,7 +101,7 @@
       <a-entity
         id="camera-rig"
         camera
-        look-controls="pointerLockEnabled: false; touchEnabled: true; magicWindowTrackingEnabled: false"
+        look-controls="pointerLockEnabled: false; touchEnabled: true; magicWindowTrackingEnabled: false; reverseMouseDrag: false"
         position="0 0 0"
       >
         <a-cursor

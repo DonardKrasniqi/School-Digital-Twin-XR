@@ -15,9 +15,17 @@ const ambienceAudio = document.getElementById("hallway-audio");
 const infoPanel = document.getElementById("info-panel");
 const toastEl = document.getElementById("toast");
 const compassNeedle = document.getElementById("compass-needle");
-const minimapCanvas = document.getElementById("minimap");
-const minimapCtx = minimapCanvas.getContext("2d");
 const ambienceBtn = document.getElementById("ambience-btn");
+let moveForward = null;
+let moveRight = null;
+let worldUp = null;
+
+function ensureMovementVectors() {
+  if (moveForward || typeof THREE === "undefined") return;
+  moveForward = new THREE.Vector3();
+  moveRight = new THREE.Vector3();
+  worldUp = new THREE.Vector3(0, 1, 0);
+}
 
 let ambienceOn = true;
 let modelReady = false;
@@ -30,8 +38,6 @@ let roomLimits = null;
 let teleportPoints = [];
 
 const DIRECTIONS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-const MAP_SCALE = 5;
-const MAP_CENTER = 70;
 const MODEL_URL = "assets/models/school.glb";
 
 function isMobileDevice() {
@@ -180,10 +186,18 @@ AFRAME.registerComponent("tour-movement", {
     if (!forward && !right) return;
 
     const dt = Math.min(timeDelta / 1000, 0.05);
-    const yaw = camera.object3D.rotation.y;
     const step = this.data.speed * dt;
-    const dx = (Math.sin(yaw) * forward + Math.cos(yaw) * right) * step;
-    const dz = (Math.cos(yaw) * forward - Math.sin(yaw) * right) * step;
+    ensureMovementVectors();
+    if (!moveForward) return;
+
+    camera.object3D.getWorldDirection(moveForward);
+    moveForward.y = 0;
+    if (moveForward.lengthSq() < 0.0001) return;
+    moveForward.normalize();
+    moveRight.crossVectors(moveForward, worldUp).normalize();
+
+    const dx = (moveForward.x * forward + moveRight.x * right) * step;
+    const dz = (moveForward.z * forward + moveRight.z * right) * step;
 
     const pos = this.el.getAttribute("position");
     this.el.setAttribute("position", {
@@ -536,16 +550,58 @@ async function beginModelLoad() {
   }
 }
 
-function applyMobileSceneTuning() {
-  if (!isMobileDevice()) {
-    if (cameraRig) {
-      cameraRig.setAttribute(
-        "look-controls",
-        "pointerLockEnabled: true; touchEnabled: true; magicWindowTrackingEnabled: false"
-      );
-    }
+function applyLookControls() {
+  if (!cameraRig) return;
+
+  if (isMobileDevice()) {
+    cameraRig.setAttribute("look-controls", {
+      pointerLockEnabled: false,
+      touchEnabled: true,
+      magicWindowTrackingEnabled: true,
+      reverseMouseDrag: false
+    });
+    const cursor = document.getElementById("cursor");
+    if (cursor) cursor.setAttribute("visible", "false");
     return;
   }
+
+  cameraRig.setAttribute("look-controls", {
+    pointerLockEnabled: false,
+    touchEnabled: true,
+    magicWindowTrackingEnabled: false,
+    reverseMouseDrag: false
+  });
+}
+
+function startLookControls(gyroGranted) {
+  applyLookControls();
+  const lookControls = cameraRig?.components?.["look-controls"];
+  if (lookControls) lookControls.play();
+
+  if (!isMobileDevice()) {
+    showToast("Click and drag the view to look around. Use WASD to move.");
+    return;
+  }
+
+  if (gyroGranted) {
+    showToast("Move your phone to look around. Use the pad to walk.");
+  } else {
+    showToast("Drag with one finger to look, or allow motion access when prompted.");
+  }
+}
+
+function requestOrientationOnTap() {
+  const Orientation = window.DeviceOrientationEvent;
+  if (!isMobileDevice() || !Orientation || typeof Orientation.requestPermission !== "function") {
+    return Promise.resolve(true);
+  }
+  return Orientation.requestPermission().then((state) => state === "granted");
+}
+
+function applyMobileSceneTuning() {
+  applyLookControls();
+
+  if (!isMobileDevice()) return;
 
   scene.setAttribute("renderer", "antialias: false; colorManagement: true");
   if (scene.renderer) {
@@ -589,10 +645,15 @@ initLoading();
 
 startTourBtn.addEventListener("click", () => {
   if (!modelReady) return;
+
+  const gyroPromise = requestOrientationOnTap();
+
   unlockAudio();
   document.body.classList.add("tour-started");
   loadingScreen.style.display = "none";
   setAmbience(true);
+
+  gyroPromise.then((granted) => startLookControls(granted));
 });
 
 /* ——— Teleport pads ——— */
@@ -616,59 +677,20 @@ function bindTeleportPads() {
   });
 }
 
-/* ——— Minimap + compass ——— */
+/* ——— Compass ——— */
 
 function yawToCompass(degrees) {
   const idx = Math.round((((degrees % 360) + 360) % 360) / 45) % 8;
   return DIRECTIONS[idx];
 }
 
-function drawMinimap() {
-  if (!player || !minimapCtx) return;
-  const w = minimapCanvas.width;
-  const h = minimapCanvas.height;
-  const pos = player.object3D.position;
-
-  minimapCtx.fillStyle = "rgba(15, 23, 42, 0.92)";
-  minimapCtx.fillRect(0, 0, w, h);
-
-  if (roomLimits) {
-    const x1 = MAP_CENTER + roomLimits.minX * MAP_SCALE;
-    const y1 = MAP_CENTER + roomLimits.minZ * MAP_SCALE;
-    const x2 = MAP_CENTER + roomLimits.maxX * MAP_SCALE;
-    const y2 = MAP_CENTER + roomLimits.maxZ * MAP_SCALE;
-    minimapCtx.strokeStyle = "#38bdf8";
-    minimapCtx.lineWidth = 2;
-    minimapCtx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-  }
-
-  teleportPoints.forEach((p) => {
-    minimapCtx.beginPath();
-    minimapCtx.fillStyle = "#0066ff";
-    minimapCtx.arc(MAP_CENTER + p.x * MAP_SCALE, MAP_CENTER + p.z * MAP_SCALE, 3, 0, Math.PI * 2);
-    minimapCtx.fill();
-  });
-
-  const px = MAP_CENTER + pos.x * MAP_SCALE;
-  const py = MAP_CENTER + pos.z * MAP_SCALE;
-  const yaw = cameraRig ? cameraRig.object3D.rotation.y : player.object3D.rotation.y;
-
-  minimapCtx.beginPath();
-  minimapCtx.fillStyle = "#22c55e";
-  minimapCtx.arc(px, py, 5, 0, Math.PI * 2);
-  minimapCtx.fill();
-
-  minimapCtx.strokeStyle = "#fbbf24";
-  minimapCtx.lineWidth = 2;
-  minimapCtx.beginPath();
-  minimapCtx.moveTo(px, py);
-  minimapCtx.lineTo(px + Math.sin(yaw) * 14, py + Math.cos(yaw) * 14);
-  minimapCtx.stroke();
-
+function updateCompass() {
+  if (!compassNeedle || !cameraRig) return;
+  const yaw = cameraRig.object3D.rotation.y;
   compassNeedle.textContent = yawToCompass(-(yaw * 180) / Math.PI);
 }
 
-scene.addEventListener("tick", drawMinimap);
+scene.addEventListener("tick", updateCompass);
 
 /* ——— Panel buttons ——— */
 
@@ -685,9 +707,6 @@ document.getElementById("close-info").addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", (event) => {
-  if (event.key === "m" || event.key === "M") {
-    document.getElementById("hud").classList.toggle("hud-hidden");
-  }
   if (event.key === "b" || event.key === "B") playEffect("bell-audio");
 });
 

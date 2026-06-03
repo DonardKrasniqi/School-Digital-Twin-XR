@@ -398,11 +398,6 @@ body.tour-started .mobile-controls {
     right: 12px;
   }
 
-  #minimap {
-    width: 110px;
-    height: 110px;
-  }
-
   .mobile-only-hint {
     display: list-item;
   }

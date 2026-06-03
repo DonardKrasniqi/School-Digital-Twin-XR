@@ -18,11 +18,52 @@ const compassNeedle = document.getElementById("compass-needle");
 const ambienceBtn = document.getElementById("ambience-btn");
 let moveForward = null;
 let moveRight = null;
+let worldUp = null;
 
 function ensureMovementVectors() {
   if (moveForward || typeof THREE === "undefined") return;
   moveForward = new THREE.Vector3();
   moveRight = new THREE.Vector3();
+  worldUp = new THREE.Vector3(0, 1, 0);
+}
+
+/** Horizontal walk basis from the real Three.js camera (matches where you look). */
+function fillHorizontalCameraBasis(cameraRigEl) {
+  const threeCam = cameraRigEl?.components?.camera?.camera;
+  if (!threeCam) return false;
+
+  threeCam.getWorldDirection(moveForward);
+  moveForward.y = 0;
+  if (moveForward.lengthSq() < 1e-10) return false;
+  moveForward.normalize();
+  moveRight.crossVectors(moveForward, worldUp).normalize();
+  return true;
+}
+
+function onTourMovementTick(time, timeDelta) {
+  if (!document.body.classList.contains("tour-started")) return;
+  if (!timeDelta || !player || !cameraRig) return;
+
+  const { forward, right } = getMoveInput();
+  if (!forward && !right) return;
+
+  ensureMovementVectors();
+  if (!fillHorizontalCameraBasis(cameraRig)) return;
+
+  const movement = player.components["tour-movement"];
+  const speed = movement ? movement.data.speed : 2.4;
+  const dt = Math.min(timeDelta / 1000, 0.05);
+  const step = speed * dt;
+
+  const dx = (moveForward.x * forward + moveRight.x * right) * step;
+  const dz = (moveForward.z * forward + moveRight.z * right) * step;
+
+  const pos = player.getAttribute("position");
+  player.setAttribute("position", {
+    x: pos.x + dx,
+    y: pos.y,
+    z: pos.z + dz
+  });
 }
 
 let ambienceOn = true;
@@ -171,38 +212,11 @@ AFRAME.registerComponent("tour-movement", {
 
   init: function () {
     setupMovementListeners();
-  },
-
-  tick: function (time, timeDelta) {
-    if (!document.body.classList.contains("tour-started")) return;
-    if (!timeDelta) return;
-
-    const camera = document.getElementById("camera-rig");
-    if (!camera) return;
-
-    const { forward, right } = getMoveInput();
-    if (!forward && !right) return;
-
-    const dt = Math.min(timeDelta / 1000, 0.05);
-    const step = this.data.speed * dt;
-    ensureMovementVectors();
-    if (!moveForward) return;
-
-    const yaw = camera.object3D.rotation.y;
-    moveForward.set(Math.sin(yaw), 0, -Math.cos(yaw));
-    moveRight.set(Math.cos(yaw), 0, -Math.sin(yaw));
-
-    const dx = (moveForward.x * forward + moveRight.x * right) * step;
-    const dz = (moveForward.z * forward + moveRight.z * right) * step;
-
-    const pos = this.el.getAttribute("position");
-    this.el.setAttribute("position", {
-      x: pos.x + dx,
-      y: pos.y,
-      z: pos.z + dz
-    });
   }
 });
+
+/* Runs after look-controls updates the camera (scene tick is after component ticks). */
+scene.addEventListener("tick", onTourMovementTick);
 
 /* ——— UI ——— */
 

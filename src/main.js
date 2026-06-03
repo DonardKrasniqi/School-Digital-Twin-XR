@@ -30,17 +30,32 @@ function ensureMovementVectors() {
 /** Horizontal walk basis from the real Three.js camera (matches where you look). */
 function fillHorizontalCameraBasis(cameraRigEl) {
   const threeCam = cameraRigEl?.components?.camera?.camera;
-  if (!threeCam) return false;
+  if (threeCam) {
+    threeCam.getWorldDirection(moveForward);
+    moveForward.y = 0;
+    if (moveForward.lengthSq() >= 1e-10) {
+      moveForward.normalize();
+      moveRight.crossVectors(moveForward, worldUp).normalize();
+      return true;
+    }
+  }
 
-  threeCam.getWorldDirection(moveForward);
-  moveForward.y = 0;
-  if (moveForward.lengthSq() < 1e-10) return false;
-  moveForward.normalize();
-  moveRight.crossVectors(moveForward, worldUp).normalize();
+  const lookControls = cameraRigEl?.components?.["look-controls"];
+  if (lookControls?.yawObject) {
+    const yaw =
+      lookControls.yawObject.rotation.y + (lookControls.magicWindowDeltaEuler?.y || 0);
+    moveForward.set(Math.sin(yaw), 0, -Math.cos(yaw));
+    moveRight.set(Math.cos(yaw), 0, -Math.sin(yaw));
+    return true;
+  }
+
+  const yaw = cameraRigEl.object3D.rotation.y;
+  moveForward.set(Math.sin(yaw), 0, -Math.cos(yaw));
+  moveRight.set(Math.cos(yaw), 0, -Math.sin(yaw));
   return true;
 }
 
-function onTourMovementTick(time, timeDelta) {
+function onTourMovementTick(time, timeDelta, speed) {
   if (!document.body.classList.contains("tour-started")) return;
   if (!timeDelta || !player || !cameraRig) return;
 
@@ -50,10 +65,8 @@ function onTourMovementTick(time, timeDelta) {
   ensureMovementVectors();
   if (!fillHorizontalCameraBasis(cameraRig)) return;
 
-  const movement = player.components["tour-movement"];
-  const speed = movement ? movement.data.speed : 2.4;
   const dt = Math.min(timeDelta / 1000, 0.05);
-  const step = speed * dt;
+  const step = (speed || 2.4) * dt;
 
   const dx = (moveForward.x * forward + moveRight.x * right) * step;
   const dz = (moveForward.z * forward + moveRight.z * right) * step;
@@ -212,11 +225,14 @@ AFRAME.registerComponent("tour-movement", {
 
   init: function () {
     setupMovementListeners();
+  },
+
+  /* Tock runs after look-controls tick + render, so facing matches movement. */
+  tock: function (time, timeDelta) {
+    onTourMovementTick(time, timeDelta, this.data.speed);
+    updateCompass();
   }
 });
-
-/* Runs after look-controls updates the camera (scene tick is after component ticks). */
-scene.addEventListener("tick", onTourMovementTick);
 
 /* ——— UI ——— */
 
@@ -670,6 +686,7 @@ function initLoading() {
   });
 
   scene.addEventListener("loaded", () => {
+    setupMovementListeners();
     applyMobileSceneTuning();
     beginModelLoad();
   });
@@ -732,8 +749,6 @@ function updateCompass() {
   const yaw = cameraRig.object3D.rotation.y;
   compassNeedle.textContent = yawToCompass(-(yaw * 180) / Math.PI);
 }
-
-scene.addEventListener("tick", updateCompass);
 
 /* ——— Panel buttons ——— */
 

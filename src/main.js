@@ -32,6 +32,11 @@ let teleportPoints = [];
 const DIRECTIONS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
 const MAP_SCALE = 5;
 const MAP_CENTER = 70;
+const MODEL_URL = "assets/models/school.glb";
+
+function isMobileDevice() {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+}
 
 /* ——— Room wall collision (keeps player inside scan bounds) ——— */
 
@@ -133,6 +138,22 @@ function getCampusMesh() {
   return schoolScan.getObject3D("mesh");
 }
 
+function modelHasGeometry() {
+  const root = getCampusMesh();
+  if (!root) return false;
+  let found = false;
+  root.traverse((node) => {
+    if (node.isMesh && node.geometry) found = true;
+  });
+  return found;
+}
+
+function setLoadingProgress(percent, message) {
+  progress = percent;
+  loadingBar.style.width = Math.min(100, percent) + "%";
+  if (message) loadingText.textContent = message;
+}
+
 function alignCampusToFloor() {
   const mesh = getCampusMesh();
   if (!mesh || typeof THREE === "undefined") return null;
@@ -229,7 +250,6 @@ function layoutTeleportPads() {
 
   const { minX, maxX, minZ, maxZ } = roomLimits;
   const spots = [
-    { x: 0, z: 0 },
     { x: (minX + maxX) * 0.25, z: (minZ + maxZ) * 0.25 },
     { x: (minX + maxX) * 0.25, z: (minZ + maxZ) * 0.75 },
     { x: (minX + maxX) * 0.75, z: (minZ + maxZ) * 0.5 }
@@ -250,14 +270,23 @@ function layoutTeleportPads() {
   bindTeleportPads();
 }
 
+function getEyeHeight() {
+  if (!campusBounds) return 1.6;
+  const { size } = campusBounds;
+  return Math.max(1.55, size.y * 0.08);
+}
+
+function setPlayerPosition(x, z) {
+  resetCameraRotation();
+  player.setAttribute("position", { x, y: getEyeHeight(), z });
+}
+
 function framePlayerInRoom() {
   if (!campusBounds) {
     player.setAttribute("position", { x: 0, y: 1.6, z: 0 });
     return;
   }
-  const { size } = campusBounds;
-  const eye = Math.max(1.5, size.y * 0.08);
-  player.setAttribute("position", { x: 0, y: eye, z: 0 });
+  setPlayerPosition(0, 0);
   if (cameraRig) cameraRig.setAttribute("rotation", "0 0 0");
 }
 
@@ -267,14 +296,23 @@ function isFileProtocol() {
   return window.location.protocol === "file:";
 }
 
+function startSlowLoadHint() {
+  setTimeout(() => {
+    if (!modelReady && progress >= 65) {
+      loadingText.textContent = isMobileDevice()
+        ? "Still loading on mobile — large 3D file, please wait…"
+        : "Still loading classroom model…";
+    }
+  }, 12000);
+}
+
 function startLoadingProgress() {
   loadingInterval = setInterval(() => {
-    if (!modelReady && progress < 85) {
-      progress += 3;
-      loadingBar.style.width = progress + "%";
-      loadingText.textContent = "Loading classroom model… " + progress + "%";
+    if (!modelReady && progress < 62) {
+      setLoadingProgress(progress + 2, "Starting download… " + progress + "%");
     }
-  }, 220);
+  }, 280);
+  startSlowLoadHint();
 }
 
 function finishLoading(success, detail) {
@@ -302,10 +340,102 @@ function finishLoading(success, detail) {
 
 function tryClaimModelLoaded() {
   if (modelReady) return true;
-  const mesh = getCampusMesh();
-  if (!mesh || !mesh.children.length) return false;
+  if (!modelHasGeometry()) return false;
   finishLoading(true);
   return true;
+}
+
+let modelBlobUrl = null;
+
+async function downloadModel() {
+  setLoadingProgress(5, "Downloading classroom scan…");
+
+  const response = await fetch(MODEL_URL, { cache: "force-cache" });
+  if (!response.ok) {
+    throw new Error("HTTP " + response.status);
+  }
+
+  const total = Number(response.headers.get("content-length")) || 0;
+  const reader = response.body?.getReader();
+
+  if (!reader) {
+    const blob = await response.blob();
+    setLoadingProgress(68, "Download complete — building scene…");
+    return blob;
+  }
+
+  const chunks = [];
+  let received = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    received += value.length;
+    if (total > 0) {
+      const pct = 5 + Math.round((received / total) * 63);
+      setLoadingProgress(pct, "Downloading… " + pct + "%");
+    } else if (received % 500000 < value.length) {
+      setLoadingProgress(40, "Downloading… (" + Math.round(received / 1e6) + " MB)");
+    }
+  }
+
+  setLoadingProgress(68, "Download complete — building scene…");
+  return new Blob(chunks, { type: "model/gltf-binary" });
+}
+
+function attachModelToScene(blob) {
+  if (modelBlobUrl) URL.revokeObjectURL(modelBlobUrl);
+  modelBlobUrl = URL.createObjectURL(blob);
+  schoolScan.setAttribute("gltf-model", modelBlobUrl);
+}
+
+function onModelLoadedEvent() {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (tryClaimModelLoaded()) {
+        setLoadingProgress(100, "Classroom ready.");
+      }
+    });
+  });
+}
+
+async function beginModelLoad() {
+  try {
+    const blob = await downloadModel();
+    attachModelToScene(blob);
+    setLoadingProgress(72, "Processing 3D model…");
+
+    const poll = setInterval(() => {
+      if (tryClaimModelLoaded()) clearInterval(poll);
+    }, 250);
+
+    setTimeout(() => clearInterval(poll), 120000);
+  } catch (err) {
+    console.error("Model download failed", err);
+    finishLoading(
+      false,
+      "Could not download the classroom model. Check your connection and refresh."
+    );
+  }
+}
+
+function applyMobileSceneTuning() {
+  if (!isMobileDevice()) {
+    if (cameraRig) {
+      cameraRig.setAttribute(
+        "look-controls",
+        "pointerLockEnabled: true; touchEnabled: true; magicWindowTrackingEnabled: false"
+      );
+    }
+    return;
+  }
+
+  scene.setAttribute("renderer", "antialias: false; colorManagement: true");
+  if (scene.renderer) {
+    scene.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+  }
+  if (cameraRig) cameraRig.removeAttribute("wasd-controls");
 }
 
 function initLoading() {
@@ -319,30 +449,86 @@ function initLoading() {
 
   startLoadingProgress();
 
-  schoolScan.addEventListener("model-loaded", () => {
-    requestAnimationFrame(() => requestAnimationFrame(() => tryClaimModelLoaded()));
-  });
-
+  schoolScan.addEventListener("model-loaded", onModelLoadedEvent);
   schoolScan.addEventListener("model-error", (e) => {
     console.error("school.glb failed", e);
-    finishLoading(false);
+    finishLoading(false, "3D model failed to open on this device. Try Wi‑Fi or a desktop browser.");
   });
 
   scene.addEventListener("loaded", () => {
-    const poll = setInterval(() => {
-      if (tryClaimModelLoaded()) clearInterval(poll);
-    }, 200);
-    setTimeout(() => clearInterval(poll), 60000);
+    applyMobileSceneTuning();
+    beginModelLoad();
   });
 
   loadTimeoutId = setTimeout(() => {
     if (!modelReady) {
-      finishLoading(false, "Load timed out — use npm start and check assets/models/school.glb");
+      finishLoading(
+        false,
+        "Load timed out. On phones use Wi‑Fi, wait longer, or try desktop."
+      );
     }
-  }, 90000);
+  }, 180000);
 }
 
 initLoading();
+
+const mobileControls = document.getElementById("mobile-controls");
+const mobileMove = { forward: 0, right: 0 };
+const MOBILE_MOVE_SPEED = 2.2;
+
+function updateMobileMovement(dt) {
+  if (!modelReady || !mobileMove.forward && !mobileMove.right) return;
+  if (!cameraRig || !player) return;
+
+  const yaw = cameraRig.object3D.rotation.y;
+  const dist = MOBILE_MOVE_SPEED * dt;
+  const dx = (Math.sin(yaw) * mobileMove.forward + Math.cos(yaw) * mobileMove.right) * dist;
+  const dz = (Math.cos(yaw) * mobileMove.forward - Math.sin(yaw) * mobileMove.right) * dist;
+
+  player.object3D.position.x += dx;
+  player.object3D.position.z += dz;
+}
+
+function initMobileControls() {
+  if (!mobileControls) return;
+
+  mobileControls.querySelectorAll(".move-btn").forEach((btn) => {
+    const dir = btn.dataset.move;
+
+    const press = () => {
+      if (dir === "forward") mobileMove.forward = 1;
+      if (dir === "back") mobileMove.forward = -1;
+      if (dir === "left") mobileMove.right = -1;
+      if (dir === "right") mobileMove.right = 1;
+      btn.classList.add("is-active");
+    };
+
+    const release = () => {
+      if (dir === "forward" || dir === "back") mobileMove.forward = 0;
+      if (dir === "left" || dir === "right") mobileMove.right = 0;
+      btn.classList.remove("is-active");
+    };
+
+    btn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      press();
+    });
+    btn.addEventListener("pointerup", release);
+    btn.addEventListener("pointerleave", release);
+    btn.addEventListener("pointercancel", release);
+  });
+
+  let lastFrame = 0;
+  scene.addEventListener("tick", () => {
+    if (!document.body.classList.contains("tour-started") || !isMobileDevice()) return;
+    const now = performance.now();
+    const dt = lastFrame ? Math.min((now - lastFrame) / 1000, 0.05) : 0;
+    lastFrame = now;
+    updateMobileMovement(dt);
+  });
+}
+
+initMobileControls();
 
 startTourBtn.addEventListener("click", () => {
   if (!modelReady) return;
@@ -358,10 +544,8 @@ function bindTeleportPads() {
   teleportPadsEl.querySelectorAll(".teleport-point").forEach((point) => {
     point.addEventListener("click", () => {
       if (!modelReady || !roomLimits) return;
-      const pos = point.getAttribute("position");
-      resetCameraRotation();
-      const eye = Math.max(roomLimits.minY, campusBounds.size.y * 0.08);
-      player.setAttribute("position", { x: pos.x, y: eye, z: pos.z });
+      const pos = point.object3D.position;
+      setPlayerPosition(pos.x, pos.z);
     });
 
     point.addEventListener("mouseenter", () => {
@@ -453,9 +637,7 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("load", () => {
   setTimeout(() => {
     const renderer = scene.renderer;
-    if (!renderer) return;
-    renderer.setPixelRatio(
-      window.innerWidth < 768 ? 0.8 : Math.min(window.devicePixelRatio, 1.5)
-    );
+    if (!renderer || isMobileDevice()) return;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   }, 800);
 });

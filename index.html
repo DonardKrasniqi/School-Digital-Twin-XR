@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="preload" href="assets/models/school.glb" as="fetch" crossorigin="anonymous" />
   <meta name="description" content="School Digital Twin — classroom WebXR tour" />
   <title>School Digital Twin | Classroom Tour</title>
   <link rel="stylesheet" href="styles/main.css" />
@@ -18,9 +20,10 @@
   <aside id="info-panel" aria-label="Tour controls">
     <h2>Controls</h2>
     <ul>
-      <li><strong>WASD</strong> — Move (stay inside walls)</li>
-      <li><strong>Mouse</strong> — Look around</li>
-      <li><strong>Blue pads</strong> — Move to spot</li>
+      <li><strong>WASD</strong> — Move (desktop)</li>
+      <li><strong>Drag / touch</strong> — Look around</li>
+      <li><strong>Blue pads</strong> — Jump to spot (corners)</li>
+      <li class="mobile-only-hint"><strong>Pad buttons</strong> — Move on phone</li>
       <li><strong>VR button</strong> — Enter VR</li>
     </ul>
     <p class="shortcut-hint">Key <kbd>M</kbd> toggles minimap</p>
@@ -48,7 +51,15 @@
     </div>
     <p id="loading-text">Preparing 3D model…</p>
     <button type="button" id="start-tour" class="btn btn-primary" hidden disabled>Enter classroom</button>
-    <p id="loading-hint" class="loading-hint">Run <code>npm start</code> and open the URL shown in the terminal (not the HTML file directly).</p>
+  </div>
+
+  <div id="mobile-controls" class="mobile-controls" aria-label="Move">
+    <button type="button" class="move-btn" data-move="forward" aria-label="Move forward">▲</button>
+    <div class="move-row">
+      <button type="button" class="move-btn" data-move="left" aria-label="Move left">◀</button>
+      <button type="button" class="move-btn" data-move="back" aria-label="Move back">▼</button>
+      <button type="button" class="move-btn" data-move="right" aria-label="Move right">▶</button>
+    </div>
   </div>
 
   <a-scene
@@ -58,15 +69,15 @@
     vr-mode-ui="enabled: false"
     loading-screen="enabled: false"
   >
-    <a-assets timeout="120000">
-      <audio id="hallway-audio" src="assets/audio/hallway-ambient.mp3" preload="auto" loop crossorigin="anonymous"></audio>
-      <audio id="bell-audio" src="assets/audio/school-bell.mp3" preload="auto" crossorigin="anonymous"></audio>
+    <a-assets timeout="180000">
+      <audio id="hallway-audio" src="assets/audio/hallway-ambient.mp3" preload="metadata" loop crossorigin="anonymous"></audio>
+      <audio id="bell-audio" src="assets/audio/school-bell.mp3" preload="metadata" crossorigin="anonymous"></audio>
     </a-assets>
 
     <a-entity light="type: ambient; intensity: 1.15"></a-entity>
     <a-entity light="type: directional; intensity: 0.85" position="4 10 6"></a-entity>
 
-    <a-entity id="school-scan" gltf-model="assets/models/school.glb" position="0 0 0"></a-entity>
+    <a-entity id="school-scan" position="0 0 0"></a-entity>
 
     <a-plane
       id="helper-floor"
@@ -91,7 +102,7 @@
       <a-entity
         id="camera-rig"
         camera
-        look-controls="pointerLockEnabled: true; touchEnabled: true"
+        look-controls="pointerLockEnabled: false; touchEnabled: true; magicWindowTrackingEnabled: true"
         wasd-controls="acceleration: 17; fly: false"
         position="0 0 0"
       >

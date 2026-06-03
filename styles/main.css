@@ -283,19 +283,6 @@ kbd {
   pointer-events: all;
 }
 
-#loading-screen.is-ready #loading-hint {
-  display: none;
-}
-
-.loading-hint {
-  margin-top: 1rem;
-  max-width: 420px;
-  font-size: 0.8rem;
-  color: #94a3b8;
-  text-align: center;
-  line-height: 1.4;
-}
-
 #start-tour:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -336,6 +323,60 @@ kbd {
   padding: 0.75rem 1.5rem;
 }
 
+.mobile-only-hint {
+  display: none;
+}
+
+/* Mobile movement pad — visible on phones after Enter classroom */
+.mobile-controls {
+  position: fixed;
+  bottom: 24px;
+  left: 16px;
+  z-index: 18;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+
+body.tour-started .mobile-controls {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body.tour-started .mobile-controls {
+    display: flex;
+  }
+}
+
+.move-row {
+  display: flex;
+  gap: 6px;
+}
+
+.move-btn {
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #38bdf8;
+  font-size: 1.25rem;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(56, 189, 248, 0.45);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.move-btn.is-active {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
 @media (max-width: 768px) {
   #info-panel {
     width: 220px;
@@ -349,12 +390,16 @@ kbd {
   }
 
   #hud {
-    bottom: 12px;
+    bottom: 100px;
     right: 12px;
   }
 
   #minimap {
     width: 110px;
     height: 110px;
+  }
+
+  .mobile-only-hint {
+    display: list-item;
   }
 }

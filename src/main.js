@@ -13,6 +13,7 @@ const teleportPadsEl = document.getElementById("teleport-pads");
 const infoPanel = document.getElementById("info-panel");
 const toastEl = document.getElementById("toast");
 const compassNeedle = document.getElementById("compass-needle");
+const ambienceAudio = document.getElementById("hallway-audio");
 let moveForward = null;
 let moveRight = null;
 let worldUp = null;
@@ -96,6 +97,7 @@ const VIDEO_PAGE_HOSTS =
 let videoPlaying = false;
 let videoMuted = false;
 let videoVisible = true;
+let videoWasPlayingBeforeHide = false;
 let classroomVideoEl = null;
 let classroomVideoScreen = null;
 let videoScreenSize = { width: VIDEO_SCREEN_MAX_WIDTH, height: (VIDEO_SCREEN_MAX_WIDTH * 9) / 16 };
@@ -296,6 +298,14 @@ function showToast(message) {
   toastTimeout = setTimeout(() => {
     toastEl.hidden = true;
   }, 2800);
+}
+
+function startHallwayAmbience() {
+  if (!ambienceAudio) return;
+
+  ambienceAudio.loop = true;
+  ambienceAudio.volume = 0.4;
+  ambienceAudio.play().catch(() => {});
 }
 
 function resetCameraRotation() {
@@ -684,6 +694,7 @@ function toggleVideoPlay() {
   if (videoPlaying) {
     classroomVideoEl.pause();
     videoPlaying = false;
+    updateVideoPlayButton();
   } else {
     classroomVideoEl
       .play()
@@ -693,9 +704,7 @@ function toggleVideoPlay() {
         refreshVideoScreenMaterial();
       })
       .catch(() => showToast("Could not play video. Click Play video again."));
-    return;
   }
-  updateVideoPlayButton();
 }
 
 function toggleVideoMute() {
@@ -712,8 +721,30 @@ function toggleVideoMute() {
 function toggleVideoVisibility() {
   if (!classroomVideoScreen) return;
 
-  videoVisible = !videoVisible;
-  classroomVideoScreen.setAttribute("visible", videoVisible);
+  if (videoVisible) {
+    videoWasPlayingBeforeHide = videoPlaying;
+    if (classroomVideoEl && videoPlaying) {
+      classroomVideoEl.pause();
+      videoPlaying = false;
+      updateVideoPlayButton();
+    }
+    videoVisible = false;
+    classroomVideoScreen.setAttribute("visible", false);
+  } else {
+    videoVisible = true;
+    classroomVideoScreen.setAttribute("visible", true);
+    if (classroomVideoEl && videoWasPlayingBeforeHide) {
+      classroomVideoEl
+        .play()
+        .then(() => {
+          videoPlaying = true;
+          updateVideoPlayButton();
+          refreshVideoScreenMaterial();
+        })
+        .catch(() => showToast("Could not resume video."));
+    }
+  }
+
   updateVideoHideButton();
 }
 
@@ -786,6 +817,7 @@ function finishLoading(success, detail) {
 
     loadingText.textContent = "Classroom ready.";
     scene.setAttribute("vr-mode-ui", "enabled", true);
+    startHallwayAmbience();
     requestAnimationFrame(() => startTour());
   } else {
     loadingText.textContent = detail || "Could not load assets/models/school.glb";
@@ -984,6 +1016,7 @@ function initLoading() {
   scene.addEventListener("loaded", () => {
     setupMovementListeners();
     applyMobileSceneTuning();
+    startHallwayAmbience();
     setupVideoControls();
     videoPreloadPromise.then((ok) => {
       if (!ok && CLASSROOM_VIDEO_URL) {
@@ -1010,6 +1043,7 @@ function startTour() {
 
   document.body.classList.add("tour-started");
   loadingScreen.style.display = "none";
+  startHallwayAmbience();
 
   requestOrientationOnTap().then((granted) => startLookControls(granted));
 }

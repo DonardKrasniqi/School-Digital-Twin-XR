@@ -75,6 +75,10 @@
     vr-mode-ui="enabled: false"
     loading-screen="enabled: false"
   >
+    <a-assets timeout="180000">
+      <audio id="hallway-audio" src="assets/audio/hallway-ambient.mp3" preload="metadata" loop crossorigin="anonymous"></audio>
+    </a-assets>
+
     <a-entity light="type: ambient; intensity: 1.15"></a-entity>
     <a-entity light="type: directional; intensity: 0.85" position="4 10 6"></a-entity>
 

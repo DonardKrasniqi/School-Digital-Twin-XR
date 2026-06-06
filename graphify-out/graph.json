@@ -16,52 +16,52 @@
       "label": "ensureMovementVectors()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L20",
+      "source_location": "L21",
       "id": "src_main_ensuremovementvectors",
-      "community": 6,
+      "community": 7,
       "norm_label": "ensuremovementvectors()"
     },
     {
       "label": "fillHorizontalCameraBasis()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L28",
+      "source_location": "L29",
       "id": "src_main_fillhorizontalcamerabasis",
-      "community": 6,
+      "community": 7,
       "norm_label": "fillhorizontalcamerabasis()"
     },
     {
       "label": "onTourMovementTick()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L55",
+      "source_location": "L56",
       "id": "src_main_ontourmovementtick",
-      "community": 6,
+      "community": 7,
       "norm_label": "ontourmovementtick()"
     },
     {
       "label": "isMobileDevice()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L112",
+      "source_location": "L114",
       "id": "src_main_ismobiledevice",
-      "community": 4,
+      "community": 2,
       "norm_label": "ismobiledevice()"
     },
     {
       "label": "getMoveInput()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L210",
+      "source_location": "L212",
       "id": "src_main_getmoveinput",
-      "community": 6,
+      "community": 7,
       "norm_label": "getmoveinput()"
     },
     {
       "label": "setupMovementListeners()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L227",
+      "source_location": "L229",
       "id": "src_main_setupmovementlisteners",
       "community": 1,
       "norm_label": "setupmovementlisteners()"
@@ -70,16 +70,25 @@
       "label": "showToast()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L292",
+      "source_location": "L294",
       "id": "src_main_showtoast",
-      "community": 0,
+      "community": 6,
       "norm_label": "showtoast()"
+    },
+    {
+      "label": "startHallwayAmbience()",
+      "file_type": "code",
+      "source_file": "main.js",
+      "source_location": "L303",
+      "id": "src_main_starthallwayambience",
+      "community": 0,
+      "norm_label": "starthallwayambience()"
     },
     {
       "label": "resetCameraRotation()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L301",
+      "source_location": "L311",
       "id": "src_main_resetcamerarotation",
       "community": 8,
       "norm_label": "resetcamerarotation()"
@@ -88,25 +97,25 @@
       "label": "getCampusMesh()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L310",
+      "source_location": "L320",
       "id": "src_main_getcampusmesh",
-      "community": 2,
+      "community": 3,
       "norm_label": "getcampusmesh()"
     },
     {
       "label": "modelHasGeometry()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L314",
+      "source_location": "L324",
       "id": "src_main_modelhasgeometry",
-      "community": 2,
+      "community": 3,
       "norm_label": "modelhasgeometry()"
     },
     {
       "label": "setLoadingProgress()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L324",
+      "source_location": "L334",
       "id": "src_main_setloadingprogress",
       "community": 9,
       "norm_label": "setloadingprogress()"
@@ -115,16 +124,16 @@
       "label": "alignCampusToFloor()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L330",
+      "source_location": "L340",
       "id": "src_main_aligncampustofloor",
-      "community": 2,
+      "community": 3,
       "norm_label": "aligncampustofloor()"
     },
     {
       "label": "applyRoomLimits()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L351",
+      "source_location": "L361",
       "id": "src_main_applyroomlimits",
       "community": 5,
       "norm_label": "applyroomlimits()"
@@ -133,7 +142,7 @@
       "label": "buildInvisibleWalls()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L383",
+      "source_location": "L393",
       "id": "src_main_buildinvisiblewalls",
       "community": 5,
       "norm_label": "buildinvisiblewalls()"
@@ -142,7 +151,7 @@
       "label": "layoutHelperFloor()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L412",
+      "source_location": "L422",
       "id": "src_main_layouthelperfloor",
       "community": 5,
       "norm_label": "layouthelperfloor()"
@@ -151,7 +160,7 @@
       "label": "layoutTeleportPads()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L419",
+      "source_location": "L429",
       "id": "src_main_layoutteleportpads",
       "community": 5,
       "norm_label": "layoutteleportpads()"
@@ -160,7 +169,7 @@
       "label": "getEyeHeight()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L446",
+      "source_location": "L456",
       "id": "src_main_geteyeheight",
       "community": 8,
       "norm_label": "geteyeheight()"
@@ -169,7 +178,7 @@
       "label": "setPlayerPosition()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L452",
+      "source_location": "L462",
       "id": "src_main_setplayerposition",
       "community": 8,
       "norm_label": "setplayerposition()"
@@ -178,7 +187,7 @@
       "label": "framePlayerInRoom()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L457",
+      "source_location": "L467",
       "id": "src_main_frameplayerinroom",
       "community": 8,
       "norm_label": "frameplayerinroom()"
@@ -187,16 +196,16 @@
       "label": "classifyVideoUrl()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L468",
+      "source_location": "L478",
       "id": "src_main_classifyvideourl",
-      "community": 3,
+      "community": 4,
       "norm_label": "classifyvideourl()"
     },
     {
       "label": "getVideoScreenDimensions()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L494",
+      "source_location": "L504",
       "id": "src_main_getvideoscreendimensions",
       "community": 1,
       "norm_label": "getvideoscreendimensions()"
@@ -205,7 +214,7 @@
       "label": "applyVideoScreenDimensions()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L506",
+      "source_location": "L516",
       "id": "src_main_applyvideoscreendimensions",
       "community": 1,
       "norm_label": "applyvideoscreendimensions()"
@@ -214,7 +223,7 @@
       "label": "configureVideoElement()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L515",
+      "source_location": "L525",
       "id": "src_main_configurevideoelement",
       "community": 1,
       "norm_label": "configurevideoelement()"
@@ -223,16 +232,16 @@
       "label": "preloadClassroomVideo()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L532",
+      "source_location": "L542",
       "id": "src_main_preloadclassroomvideo",
-      "community": 3,
+      "community": 4,
       "norm_label": "preloadclassroomvideo()"
     },
     {
       "label": "setupClassroomVideo()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L621",
+      "source_location": "L631",
       "id": "src_main_setupclassroomvideo",
       "community": 1,
       "norm_label": "setupclassroomvideo()"
@@ -241,25 +250,25 @@
       "label": "tryCompleteLoading()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L651",
+      "source_location": "L661",
       "id": "src_main_trycompleteloading",
-      "community": 2,
+      "community": 3,
       "norm_label": "trycompleteloading()"
     },
     {
       "label": "refreshVideoScreenMaterial()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L657",
+      "source_location": "L667",
       "id": "src_main_refreshvideoscreenmaterial",
-      "community": 0,
+      "community": 6,
       "norm_label": "refreshvideoscreenmaterial()"
     },
     {
       "label": "updateVideoPlayButton()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L663",
+      "source_location": "L673",
       "id": "src_main_updatevideoplaybutton",
       "community": 0,
       "norm_label": "updatevideoplaybutton()"
@@ -268,16 +277,16 @@
       "label": "updateVideoMuteButton()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L668",
+      "source_location": "L678",
       "id": "src_main_updatevideomutebutton",
-      "community": 0,
+      "community": 6,
       "norm_label": "updatevideomutebutton()"
     },
     {
       "label": "updateVideoHideButton()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L673",
+      "source_location": "L683",
       "id": "src_main_updatevideohidebutton",
       "community": 0,
       "norm_label": "updatevideohidebutton()"
@@ -286,7 +295,7 @@
       "label": "toggleVideoPlay()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L678",
+      "source_location": "L688",
       "id": "src_main_togglevideoplay",
       "community": 0,
       "norm_label": "togglevideoplay()"
@@ -295,16 +304,16 @@
       "label": "toggleVideoMute()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L701",
+      "source_location": "L710",
       "id": "src_main_togglevideomute",
-      "community": 0,
+      "community": 6,
       "norm_label": "togglevideomute()"
     },
     {
       "label": "toggleVideoVisibility()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L712",
+      "source_location": "L721",
       "id": "src_main_togglevideovisibility",
       "community": 0,
       "norm_label": "togglevideovisibility()"
@@ -313,16 +322,16 @@
       "label": "seekVideo()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L720",
+      "source_location": "L751",
       "id": "src_main_seekvideo",
-      "community": 0,
+      "community": 6,
       "norm_label": "seekvideo()"
     },
     {
       "label": "setupVideoControls()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L739",
+      "source_location": "L770",
       "id": "src_main_setupvideocontrols",
       "community": 0,
       "norm_label": "setupvideocontrols()"
@@ -331,52 +340,52 @@
       "label": "isFileProtocol()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L752",
+      "source_location": "L783",
       "id": "src_main_isfileprotocol",
-      "community": 3,
+      "community": 4,
       "norm_label": "isfileprotocol()"
     },
     {
       "label": "startSlowLoadHint()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L756",
+      "source_location": "L787",
       "id": "src_main_startslowloadhint",
-      "community": 3,
+      "community": 4,
       "norm_label": "startslowloadhint()"
     },
     {
       "label": "startLoadingProgress()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L766",
+      "source_location": "L797",
       "id": "src_main_startloadingprogress",
-      "community": 3,
+      "community": 4,
       "norm_label": "startloadingprogress()"
     },
     {
       "label": "finishLoading()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L775",
+      "source_location": "L806",
       "id": "src_main_finishloading",
-      "community": 2,
+      "community": 3,
       "norm_label": "finishloading()"
     },
     {
       "label": "tryClaimModelLoaded()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L795",
+      "source_location": "L827",
       "id": "src_main_tryclaimmodelloaded",
-      "community": 2,
+      "community": 3,
       "norm_label": "tryclaimmodelloaded()"
     },
     {
       "label": "downloadModel()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L801",
+      "source_location": "L833",
       "id": "src_main_downloadmodel",
       "community": 9,
       "norm_label": "downloadmodel()"
@@ -385,7 +394,7 @@
       "label": "attachModelToScene()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L838",
+      "source_location": "L870",
       "id": "src_main_attachmodeltoscene",
       "community": 9,
       "norm_label": "attachmodeltoscene()"
@@ -394,7 +403,7 @@
       "label": "onModelLoadedEvent()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L844",
+      "source_location": "L876",
       "id": "src_main_onmodelloadedevent",
       "community": 1,
       "norm_label": "onmodelloadedevent()"
@@ -403,7 +412,7 @@
       "label": "beginModelLoad()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L854",
+      "source_location": "L886",
       "id": "src_main_beginmodelload",
       "community": 9,
       "norm_label": "beginmodelload()"
@@ -412,79 +421,79 @@
       "label": "applyLookControls()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L876",
+      "source_location": "L908",
       "id": "src_main_applylookcontrols",
-      "community": 4,
+      "community": 2,
       "norm_label": "applylookcontrols()"
     },
     {
       "label": "requestScenePointerLock()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L901",
+      "source_location": "L933",
       "id": "src_main_requestscenepointerlock",
-      "community": 4,
+      "community": 2,
       "norm_label": "requestscenepointerlock()"
     },
     {
       "label": "setupDesktopPointerLock()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L907",
+      "source_location": "L939",
       "id": "src_main_setupdesktoppointerlock",
-      "community": 4,
+      "community": 2,
       "norm_label": "setupdesktoppointerlock()"
     },
     {
       "label": "startLookControls()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L929",
+      "source_location": "L961",
       "id": "src_main_startlookcontrols",
-      "community": 4,
+      "community": 2,
       "norm_label": "startlookcontrols()"
     },
     {
       "label": "requestOrientationOnTap()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L947",
+      "source_location": "L979",
       "id": "src_main_requestorientationontap",
-      "community": 7,
+      "community": 2,
       "norm_label": "requestorientationontap()"
     },
     {
       "label": "applyMobileSceneTuning()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L955",
+      "source_location": "L987",
       "id": "src_main_applymobilescenetuning",
-      "community": 4,
+      "community": 2,
       "norm_label": "applymobilescenetuning()"
     },
     {
       "label": "initLoading()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L966",
+      "source_location": "L998",
       "id": "src_main_initloading",
-      "community": 3,
+      "community": 4,
       "norm_label": "initloading()"
     },
     {
       "label": "startTour()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L1008",
+      "source_location": "L1041",
       "id": "src_main_starttour",
-      "community": 7,
+      "community": 0,
       "norm_label": "starttour()"
     },
     {
       "label": "bindTeleportPads()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L1021",
+      "source_location": "L1055",
       "id": "src_main_bindteleportpads",
       "community": 5,
       "norm_label": "bindteleportpads()"
@@ -493,7 +502,7 @@
       "label": "yawToCompass()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L1042",
+      "source_location": "L1076",
       "id": "src_main_yawtocompass",
       "community": 10,
       "norm_label": "yawtocompass()"
@@ -502,7 +511,7 @@
       "label": "updateCompass()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L1047",
+      "source_location": "L1081",
       "id": "src_main_updatecompass",
       "community": 10,
       "norm_label": "updatecompass()"
@@ -511,10 +520,28 @@
       "label": "setPanelVisible()",
       "file_type": "code",
       "source_file": "main.js",
-      "source_location": "L1057",
+      "source_location": "L1091",
       "id": "src_main_setpanelvisible",
       "community": 1,
       "norm_label": "setpanelvisible()"
+    },
+    {
+      "label": "unlockAudio()",
+      "file_type": "code",
+      "source_file": "main.js",
+      "source_location": "L303",
+      "community": 0,
+      "norm_label": "unlockaudio()",
+      "id": "src_main_unlockaudio"
+    },
+    {
+      "label": "syncAmbienceWithVideo()",
+      "file_type": "code",
+      "source_file": "main.js",
+      "source_location": "L314",
+      "community": 0,
+      "norm_label": "syncambiencewithvideo()",
+      "id": "src_main_syncambiencewithvideo"
     },
     {
       "label": "playEffect()",
@@ -530,18 +557,9 @@
       "file_type": "code",
       "source_file": "main.js",
       "source_location": "L310",
-      "community": 7,
+      "community": 0,
       "norm_label": "setambience()",
       "id": "src_main_setambience"
-    },
-    {
-      "label": "unlockAudio()",
-      "file_type": "code",
-      "source_file": "main.js",
-      "source_location": "L327",
-      "community": 7,
-      "norm_label": "unlockaudio()",
-      "id": "src_main_unlockaudio"
     }
   ],
   "links": [
@@ -614,6 +632,16 @@
       "confidence_score": 1.0,
       "source": "main_js",
       "target": "src_main_showtoast"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
+      "source_location": "L303",
+      "weight": 1.0,
+      "source": "main_js",
+      "target": "src_main_starthallwayambience",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -881,9 +909,9 @@
       "source_file": "main.js",
       "source_location": "L720",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "main_js",
-      "target": "src_main_seekvideo",
-      "confidence_score": 1.0
+      "target": "src_main_seekvideo"
     },
     {
       "relation": "contains",
@@ -1109,6 +1137,26 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "main.js",
+      "source_location": "L314",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "main_js",
+      "target": "src_main_unlockaudio"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
+      "source_location": "L314",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "main_js",
+      "target": "src_main_syncambiencewithvideo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
       "source_location": "L290",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -1124,16 +1172,6 @@
       "confidence_score": 1.0,
       "source": "main_js",
       "target": "src_main_setambience"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "main.js",
-      "source_location": "L314",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "main_js",
-      "target": "src_main_unlockaudio"
     },
     {
       "relation": "calls",
@@ -1285,9 +1323,9 @@
       "source_file": "main.js",
       "source_location": "L722",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_seekvideo",
-      "target": "src_main_showtoast",
-      "confidence_score": 1.0
+      "target": "src_main_showtoast"
     },
     {
       "relation": "calls",
@@ -1299,6 +1337,28 @@
       "confidence_score": 1.0,
       "source": "src_main_startlookcontrols",
       "target": "src_main_showtoast"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
+      "source_location": "L820",
+      "weight": 1.0,
+      "source": "src_main_finishloading",
+      "target": "src_main_starthallwayambience",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
+      "source_location": "L1046",
+      "weight": 1.0,
+      "source": "src_main_starttour",
+      "target": "src_main_starthallwayambience",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -1527,9 +1587,9 @@
       "source_file": "main.js",
       "source_location": "L736",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_main_seekvideo",
-      "target": "src_main_refreshvideoscreenmaterial",
-      "confidence_score": 1.0
+      "target": "src_main_refreshvideoscreenmaterial"
     },
     {
       "relation": "calls",
@@ -1540,6 +1600,17 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_main_togglevideoplay",
+      "target": "src_main_updatevideoplaybutton"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
+      "source_location": "L750",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_main_togglevideovisibility",
       "target": "src_main_updatevideoplaybutton"
     },
     {
@@ -1596,6 +1667,28 @@
       "confidence_score": 1.0,
       "source": "src_main_setupvideocontrols",
       "target": "src_main_updatevideohidebutton"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
+      "source_location": "L717",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_main_togglevideoplay",
+      "target": "src_main_syncambiencewithvideo"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
+      "source_location": "L754",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_main_togglevideovisibility",
+      "target": "src_main_syncambiencewithvideo"
     },
     {
       "relation": "calls",
@@ -1734,22 +1827,33 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "main.js",
-      "source_location": "L852",
+      "source_location": "L849",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_main_starttour",
-      "target": "src_main_setambience"
+      "target": "src_main_unlockaudio"
     },
     {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "main.js",
-      "source_location": "L849",
+      "source_location": "L1070",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_main_starttour",
-      "target": "src_main_unlockaudio"
+      "target": "src_main_syncambiencewithvideo"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "main.js",
+      "source_location": "L852",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_main_starttour",
+      "target": "src_main_setambience"
     },
     {
       "relation": "calls",
@@ -1764,5 +1868,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "6b5f9d5d960f2371e80edf724006647bd4dc48fa"
+  "built_at_commit": "16e0c52d5d454cf1c0e24fd9fd188b332d970059"
 }

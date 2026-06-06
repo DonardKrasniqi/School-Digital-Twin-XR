@@ -169,6 +169,39 @@ kbd {
   border-color: #6b7280;
 }
 
+.btn-video {
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn-video:hover {
+  background: #1d4ed8;
+}
+
+.btn-row {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.btn-row .btn {
+  flex: 1;
+}
+
+#show-panel-btn {
+  display: none;
+  position: fixed;
+  top: 64px;
+  left: 16px;
+  z-index: 20;
+  width: auto;
+  min-width: 120px;
+  margin-top: 0;
+}
+
+#show-panel-btn.visible {
+  display: block;
+}
+
 /* HUD */
 #hud {
   position: fixed;

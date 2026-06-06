@@ -18,7 +18,16 @@
   </header>
 
   <aside id="info-panel" aria-label="Tour controls">
-    <h2>Controls</h2>
+    <p class="panel-section-label">Classroom video</p>
+    <button type="button" id="video-play-btn" class="btn btn-video">Play video</button>
+    <div class="btn-row">
+      <button type="button" id="video-back-btn" class="btn btn-muted">−10 s</button>
+      <button type="button" id="video-forward-btn" class="btn btn-muted">+10 s</button>
+    </div>
+    <button type="button" id="video-mute-btn" class="btn btn-muted">Mute video</button>
+    <button type="button" id="video-hide-btn" class="btn btn-muted">Hide video</button>
+
+    <h2>Movement</h2>
     <ul>
       <li><strong>WASD</strong> — Move (desktop)</li>
       <li><strong>Mouse</strong> — Look (desktop, click view to capture)</li>
@@ -28,12 +37,11 @@
       <li class="mobile-only-hint"><strong>Pad buttons</strong> — Move on phone</li>
       <li><strong>VR button</strong> — Enter VR</li>
     </ul>
-    <p class="panel-section-label">Sounds</p>
-    <button type="button" id="bell-btn" class="btn btn-bell">Ring school bell</button>
-    <button type="button" id="ambience-btn" class="btn btn-muted">Hallway sound: On</button>
 
     <button type="button" id="close-info" class="btn btn-ghost">Hide panel</button>
   </aside>
+
+  <button type="button" id="show-panel-btn" class="btn btn-ghost show-panel-btn">Show panel</button>
 
   <div id="hud" aria-hidden="true">
     <div id="compass" title="Facing direction">
@@ -49,7 +57,6 @@
       <div id="loading-bar"></div>
     </div>
     <p id="loading-text">Preparing 3D model…</p>
-    <button type="button" id="start-tour" class="btn btn-primary" hidden disabled>Enter classroom</button>
   </div>
 
   <div id="mobile-controls" class="mobile-controls" aria-label="Move">
@@ -68,11 +75,6 @@
     vr-mode-ui="enabled: false"
     loading-screen="enabled: false"
   >
-    <a-assets timeout="180000">
-      <audio id="hallway-audio" src="assets/audio/hallway-ambient.mp3" preload="metadata" loop crossorigin="anonymous"></audio>
-      <audio id="bell-audio" src="assets/audio/school-bell.mp3" preload="metadata" crossorigin="anonymous"></audio>
-    </a-assets>
-
     <a-entity light="type: ambient; intensity: 1.15"></a-entity>
     <a-entity light="type: directional; intensity: 0.85" position="4 10 6"></a-entity>
 
